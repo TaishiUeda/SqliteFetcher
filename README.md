@@ -94,7 +94,7 @@ Column_t col = {
     {"Second name", Data("Rain")},
     {"Age", Data(28)},
     {"Height_cm", Data(168.2)},
-    {"Weight_kg", Data(49,3)},
+    {"Weight_kg", Data(49.3)},
 };
 ```
 #### Setting data after constructed.
@@ -106,7 +106,7 @@ col["First name"] = Data("Alina");
 col["Second name"] = Data("Rain");
 col["Age"] = Data(28);
 col["Height_cm"] = Data(168.2);
-col["Weight_kg"] = Data(49,3);
+col["Weight_kg"] = Data(49.3);
 ```
 
 ### 2. ColumnList type. This is a vector of column.
