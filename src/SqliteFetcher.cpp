@@ -126,7 +126,7 @@ namespace sf{
     //---------------------------------------------------------
     void Data::set(void* value_ptr, const Type_t& type, const uint32_t& size){
 	this->data_.resize(size);
-	for(size_t k=0u; k<8u; ++k){
+	for(size_t k=0u; k<data_.size(); ++k){
 	    this->data_[k] = reinterpret_cast<int8_t*>(value_ptr)[k];
 	}
 	this->type_ = type;
