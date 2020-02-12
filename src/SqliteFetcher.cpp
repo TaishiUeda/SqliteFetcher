@@ -38,7 +38,13 @@ namespace sf{
 
     //---------------------------------------------------------
     void Data::setType(sql_types::TypeStr_t type){
-	//typeから括弧部分を消去する
+        //PRIMARY_KEY constraint can be set to only INTEGER type
+	if((key_flg_ & PRIMARY_KEY) != 0u){
+            type_str_ = "INTEGER";
+	    type_ = INT64;
+	    return;
+	}
+	//delete cascade from type
 	size_t cpos = type.find('(');
 	if(cpos != std::string::npos){
 	    type = type.substr(0u,cpos);
@@ -53,6 +59,11 @@ namespace sf{
     }
     //---------------------------------------------------------
     void Data::setType(Type_t type){
+	if((key_flg_ & PRIMARY_KEY) != 0u){
+            type_str_ = "INTEGER";
+	    type_ = INT64;
+	    return;
+	}
 	switch(type){
 	    case NONE:
 		type_str_ = "NONE";
@@ -609,6 +620,7 @@ namespace sf{
     //-------------------------------------------------------------------
     // Execute SQLite query
     ExecResult_t Fetcher::exec(const std::string& query, std::string& err_msg){
+	err_msg.clear();
 	char *err_char = 0;
 	last_exec_result_.in_sql = query;
 	last_exec_result_.result.clear();
@@ -624,6 +636,7 @@ namespace sf{
     //-------------------------------------------------------------------
     // Execute SQLite query
     std::list<ExecResult_t> Fetcher::execSeparate(const std::string& query, std::string& err_msg){
+	err_msg.clear();
 	std::list<ExecResult_t> ret_list;
 	size_t i_begin = 0u;
 	size_t i_dlm = 0u;
@@ -721,7 +734,7 @@ namespace sf{
 	    }
 	}
 	size_t begin_pos = pos;
-	while(res.in_sql[pos] != ' '){
+	while(res.in_sql[pos] != ' ' && res.in_sql[pos] != ';'){
 	    ++pos;
 	    if(pos >= res.in_sql.size()){
 		break;

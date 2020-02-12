@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     std::cout << "--- 1. Create table from TableInfo_t ---" << std::endl;
     TableInfo_t table_info_A = {
 	{"user",{ 
-		    {"ID", Data(INT64, PRIMARY_KEY | NOT_NULL)},
+		    {"ID", Data(INT64, PRIMARY_KEY)},
 		    {"name", Data(TEXT, NOT_NULL)},
 		    {"sex", Data(TEXT)},
 		    {"age", Data(INT8)},
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 		}
 	},
 	{"area",{ 
-		    {"ID", Data(INT64, PRIMARY_KEY | NOT_NULL)},
+		    {"ID", Data(INT64, PRIMARY_KEY)},
 		    {"country", Data("Japan", NOT_NULL | DEFAULT)},
 		    {"city", Data(TEXT)},
 		    {"population", Data(DOUBLE)},
@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
     // 2. From table_info B
     std::cout << "--- 2. Create table from TableInfo_t ---" << std::endl;
     Column_t user_col_1 ={
-	{"ID", Data(INT64, PRIMARY_KEY | NOT_NULL)},
+	{"ID", Data(INT64, PRIMARY_KEY)},
 	{"name", Data(TEXT, NOT_NULL)},
 	{"sex", Data(TEXT)},
 	{"age", Data(INT8)},
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 	{"size", Data("Medium", "CHAR(8)", DEFAULT)}
     };
     Column_t area_col_1 ={
-	{"ID", Data(INT64, PRIMARY_KEY | NOT_NULL)},
+	{"ID", Data(INT64, PRIMARY_KEY)},
 	{"country", Data(TEXT, NOT_NULL)},
 	{"prefecture", Data(TEXT)},
 	{"population", Data(DOUBLE)},
@@ -118,7 +118,7 @@ int main(int argc, char* argv[]) {
     std::cout << "--- 5. Create table from a Table_t ---" << std::endl;
     ColumnList_t area_col_list = { 
 	{
-	    {"ID", Data(0, PRIMARY_KEY | NOT_NULL)},
+	    {"ID", Data(0, PRIMARY_KEY)},
 	    {"country", Data("Japan", NOT_NULL)},
 	    {"city", Data("Ibaraki")},
 	    {"population", Data(287.1)}
@@ -145,8 +145,8 @@ int main(int argc, char* argv[]) {
     std::cout << str << std::endl;
 
     //execute query
-    //res = sql_fetch.exec(str, err_msg);
-    //std::cout << sql_fetch.dump(res) << std::endl;
+    res = sql_fetch.exec(str, err_msg);
+    std::cout << sql_fetch.dump(res) << std::endl;
 
     //###############################################################
     //  Fetch colmun
@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
     //get some of values by "get" function
     std::string user_name_1;
     selected_1[0]["name"].get(user_name_1);
-    double user1_height_cm;
+    float user1_height_cm;
     selected_1[0]["height_cm"].get(user1_height_cm);
     std::cout << "From user, name: " << user_name_1 
 	<< ", height_cm: " << user1_height_cm << std::endl;
@@ -219,8 +219,8 @@ int main(int argc, char* argv[]) {
     //###############################################################
     //  Update column
     //
-    //res = sql_fetch.exec(str, err_msg);
-    //std::cout << sql_fetch.dump(res);
+    res = sql_fetch.exec(str, err_msg);
+    std::cout << sql_fetch.dump(res);
     std::cout << "--- 10. update a column ---" << std::endl;
     res = sql_fetch.exec("SELECT ID, size FROM user WHERE height_cm >= 180.0;", err_msg);
     std::cout << sql_fetch.dump(res);
@@ -231,12 +231,13 @@ int main(int argc, char* argv[]) {
 	i_large->at("size").change("Large");
 	str = sql_fetch.genQueryUpdate("user", *i_large, err_msg);
 	std::cout << str << std::endl;
-	//res = sql_fetch.exec(str, err_msg);
-	//std::cout << sql_fetch.dump(res);
+	res = sql_fetch.exec(str, err_msg);
+	std::cout << sql_fetch.dump(res);
     }
 
-    res = sql_fetch.exec("SELECT * from user", err_msg);
+    res = sql_fetch.exec("SELECT * from user;", err_msg);
     std::cout << sql_fetch.dump(res);
+    ColumnList_t all_user = sql_fetch.fetchColumn(res, err_msg);
     
     return 0;
 }

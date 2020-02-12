@@ -50,7 +50,7 @@ namespace sf{
 	//! Type definition of SQL by string style
 	using TypeStr_t = std::string;
 	const TypeStr_t INT = "INT";//!< INT32
-	const TypeStr_t INTEGER = "INTEGER";//!< INT32
+	const TypeStr_t INTEGER = "INTEGER";//!< INT64
 	const TypeStr_t TYNYINT = "TYNYINT";//!<  INT8
 	const TypeStr_t SMALLINT = "SMALLINT";//!< INT16
 	const TypeStr_t MEDIUMINT = "MEDIUMINT";//!< INT32
@@ -81,7 +81,7 @@ namespace sf{
     //! Type conversion into C style.
     const std::map<sql_types::TypeStr_t, Type_t> TypeDef{
 	{sql_types::INT, INT32},
-	    {sql_types::INTEGER, INT32},
+	    {sql_types::INTEGER, INT64},
 	    {sql_types::TYNYINT, INT8},
 	    {sql_types::SMALLINT, INT16},
 	    {sql_types::MEDIUMINT, INT32},
