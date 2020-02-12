@@ -3,7 +3,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS true)
 set(CMAKE_OSX_SYSROOT "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")
 
 # projectname is the same as the main-executable
-project(SqliteFetcher)
+project(sqlite_fetcher)
 
 #output compile options for intelli-sence
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
@@ -19,7 +19,7 @@ if(CMAKE_BUILD_TYPE MATCHES Release)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -O3 -march=native ")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -march=native")
 elseif(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(OUT_TARGET_NAME ${PROJECT_NAME}_d)
+    set(OUT_TARGET_NAME ${PROJECT_NAME})
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -g3 -O0 -march=native ")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g3 -O0 -march=native")
 endif()
@@ -103,5 +103,10 @@ install(TARGETS ${OUT_TARGET_NAME}
     OWNER_READ OWNER_WRITE OWNER_EXECUTE 
     GROUP_READ GROUP_EXECUTE
     WORLD_READ WORLD_EXECUTE
+    )
+
+install(FILES
+    SqliteFetcher.hpp
+    DESTINATION include
     )
 
