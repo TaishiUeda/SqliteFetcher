@@ -58,18 +58,28 @@ namespace sf{
 		type_str_ = "NONE";
 		break;
 	    case INT8:
+		type_str_ = "INT8";
+		break;
 	    case INT16:
+		type_str_ = "INT16";
+		break;
 	    case INT32:
+		type_str_ = "INT32";
+		break;
 	    case INT64:
+		type_str_ = "INT64";
+		break;
 	    case UINT64:
-		type_str_ = "INTEGER";
+		type_str_ = "UINT64";
 		break;
 	    case FLOAT:
+		type_str_ = "FLOAT";
+		break;
 	    case DOUBLE:
-		type_str_ = "REAL";
+		type_str_ = "DOUBLE";
 		break;
 	    case BOOL:
-		type_str_ = "NUMERIC";
+		type_str_ = "BOOL";
 		break;
 	    case TEXT:
 		type_str_ = "TEXT";
