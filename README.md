@@ -39,7 +39,7 @@ TableInfo_t table_info_A = {
 std::string query = sql_fetch.genQueryCreate(table_info_A, err_msg);
 
 //execute query
-ExecResult_t res = sql_fetch.exec(str, err_msg);
+ExecResult_t res = sql_fetch.exec(query, err_msg);
 ```
 
 And, below is a code to get certain columns and save it into a container;
