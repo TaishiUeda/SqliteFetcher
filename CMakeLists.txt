@@ -106,7 +106,7 @@ install(TARGETS ${OUT_TARGET_NAME}
     )
 
 install(FILES
-    SqliteFetcher.hpp
+    ./src/SqliteFetcher.hpp
     DESTINATION include
     )
 
