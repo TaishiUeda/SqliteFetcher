@@ -126,8 +126,8 @@ or,
 
 ```cpp
 Table_t table
-db_1["list1"] = column_list_1;
-db_1["list2"] = column_list_2;
+table["list1"] = column_list_1;
+table["list2"] = column_list_2;
 ```
 
 ### 4. TableInfo_t to determin table schema.
@@ -217,7 +217,7 @@ One functions to save result of "SELECT" query into ColumnList_t container.
 
 ---
 
-## Function to utiliry
+## Function to utility
 
 1. sf::Fetcher::dump()
     Dump results into Json style string.
