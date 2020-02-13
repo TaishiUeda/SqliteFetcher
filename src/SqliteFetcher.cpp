@@ -69,16 +69,16 @@ namespace sf{
 		type_str_ = "NONE";
 		break;
 	    case INT8:
-		type_str_ = "INT8";
+		type_str_ = "TYNYINT";
 		break;
 	    case INT16:
-		type_str_ = "INT16";
+		type_str_ = "SMALLINT";
 		break;
 	    case INT32:
-		type_str_ = "INT32";
+		type_str_ = "MEDIUMINT";
 		break;
 	    case INT64:
-		type_str_ = "INT64";
+		type_str_ = "BIGINT";
 		break;
 	    case UINT64:
 		type_str_ = "UINT64";
