@@ -812,6 +812,7 @@ namespace sf{
 		    else{
 			new_query += i_row->first;
 		    }
+
 		    if(std::next(i_word) != i_from){
 			new_query += ", ";
 		    }
@@ -853,11 +854,19 @@ namespace sf{
 	    auto i_elm_end = i_res->end();
 	    Column_t a_col;
 	    for(auto i_elm = i_res->begin(); i_elm != i_elm_end; ++i_elm){
-		auto i_data = table_col.find(i_elm->first);
-		if(i_data == table_col.end()){
-		    err_msg = "Coudn't find " + i_elm->first + " in table " +  *std::next(i_from);
+		//remove quote()
+		std::string keyword;
+		if(i_elm->first.find("quote(") != std::string::npos){
+		    keyword = i_elm->first.substr(6u,i_elm->first.length()-7u);
 		}
-		a_col[i_elm->first] = Data(i_elm->second, 
+		else{
+		    keyword = i_elm->first;
+		}
+		auto i_data = table_col.find(keyword);
+		if(i_data == table_col.end()){
+		    err_msg = "Coudn't find " + keyword + " in table " +  *std::next(i_from);
+		}
+		a_col[keyword] = Data(i_elm->second, 
 			i_data->second.typeStr(), i_data->second.flags());
 	    }
 	    col.push_back(a_col);
