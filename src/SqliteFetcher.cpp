@@ -632,9 +632,6 @@ namespace sf{
 	}
 	return last_exec_result_;
     }
-    ExecResult_t Fetcher::exec(std::string query, std::string& err_msg){
-	return exec(query, err_msg);
-    }
 
     //-------------------------------------------------------------------
     // Execute SQLite query
@@ -926,7 +923,7 @@ namespace sf{
 		is_first = false;
 	    }
 	    ret += i_col->second.str();
-	}
+        }
 	ret += "); ";
 	return ret;
     }

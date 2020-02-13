@@ -399,7 +399,6 @@ namespace sf{
 	     * \retval result result of the input query.
 	     */
 	    ExecResult_t exec(const std::string& query, std::string& err_msg);
-	    ExecResult_t exec(std::string query, std::string& err_msg);
 
 	    //! Execute SQLite query
 	    /*!
@@ -409,7 +408,6 @@ namespace sf{
 	     * \retval result list of results of input queriesy.
 	     */
 	    std::list<ExecResult_t> execSeparate(const std::string& query, std::string& err_msg);
-	    std::list<ExecResult_t> execSeparate(std::string query, std::string& err_msg);
 
 	    //! Dump result of exec function into string.
 	    /*!
