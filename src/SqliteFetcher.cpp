@@ -144,7 +144,7 @@ namespace sf{
     bool Data::get(void* value_ptr, const Type_t& type) const{
 	if(type_ == type){
 	    for(size_t k=0u; k<data_.size(); ++k){
-		reinterpret_cast<int8_t*>(value_ptr)[k] = data_[k];
+		reinterpret_cast<uint8_t*>(value_ptr)[k] = data_[k];
 	    }
 	    return true;
 	}
@@ -157,7 +157,7 @@ namespace sf{
     void Data::set(void* value_ptr, const Type_t& type, const uint32_t& size){
 	this->data_.resize(size);
 	for(size_t k=0u; k<data_.size(); ++k){
-	    this->data_[k] = reinterpret_cast<int8_t*>(value_ptr)[k];
+	    this->data_[k] = reinterpret_cast<uint8_t*>(value_ptr)[k];
 	}
 	this->type_ = type;
 	
@@ -228,7 +228,7 @@ namespace sf{
     bool Data::get(bool& value) const{
 	if(this->type_ == BOOL){
 	    for(size_t k=0u; k<data_.size(); ++k){
-		reinterpret_cast<int8_t*>(&value)[k] = data_[k];
+		reinterpret_cast<uint8_t*>(&value)[k] = data_[k];
 	    }
 	    return true;
 	}
@@ -492,14 +492,10 @@ namespace sf{
 			  Binary_t value_blob;
 			  this->get(value_blob);
 			  char buff[2*value_blob.size()+1];
-			  char* ptr = buff;
 			  for(size_t k=0u; k<value_blob.size(); ++k){
-			      sprintf(ptr,"%2x",value_blob[k]);
-			      //Hexadecimal occupies 2 charactors
-			      ++ptr;
-			      ++ptr;
+			      sprintf(&buff[2u*k],"%02x",value_blob[k]);
 			  }
-			  *ptr = '\0';
+			  buff[2*value_blob.size()] = '\0';
 			  ret = "X'" + std::string(buff) + "'";
 			  break;
 		      }
@@ -573,12 +569,12 @@ namespace sf{
 		      }
 	    case BLOB:{
 			  Binary_t value_blob;
-			  for(size_t k=2u; 2u*k+1u < dflt_str.length()-1u; ++k){
-			      int8_t elm;
+			  for(size_t k=0u; 2u*k+3u < dflt_str.length()-1u; ++k){
+			      uint8_t elm;
 			      std::string elm_str;
-			      elm_str.push_back(dflt_str[2u*k]);
-			      elm_str.push_back(dflt_str[2u*k+1u]);
-			      elm = static_cast<int8_t>(std::stoi(elm_str, nullptr, 16));
+			      elm_str.push_back(dflt_str[2u*k+2u]);
+			      elm_str.push_back(dflt_str[2u*k+3u]);
+			      elm = static_cast<uint8_t>(std::stoi(elm_str, nullptr, 16));
 			      value_blob.push_back(elm);
 			  }
 			  this->set(value_blob);

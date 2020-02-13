@@ -34,7 +34,7 @@ namespace sf{
     };
 
     //! Container for binary data
-    using Binary_t = std::vector<int8_t>;
+    using Binary_t = std::vector<uint8_t>;
 
     //! Flags for data values
     using KeyFlag_t = uint8_t;
