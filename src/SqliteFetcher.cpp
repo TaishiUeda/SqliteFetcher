@@ -476,7 +476,7 @@ namespace sf{
 	    case TEXT:{
 			  std::string value_text;
 			  this->get(value_text);
-			  ret = value_text;
+			  ret = "'" + value_text + "'";
 			  break;
 		      }
 	    case BLOB:{
@@ -486,7 +486,7 @@ namespace sf{
 			  for(size_t k=0u; k<value_blob.size(); ++k){
 			      sprintf(buff,"%x",value_blob[k]);
 			  }
-			  ret = std::string(buff);
+			  ret = "X'" + std::string(buff) + "'";
 			  break;
 		      }
 	}
@@ -631,6 +631,9 @@ namespace sf{
 	    sqlite3_free(err_char);
 	}
 	return last_exec_result_;
+    }
+    ExecResult_t Fetcher::exec(std::string query, std::string& err_msg){
+	return exec(query, err_msg);
     }
 
     //-------------------------------------------------------------------
@@ -922,13 +925,8 @@ namespace sf{
 	    else{
 		is_first = false;
 	    }
-	    if(i_col->second.type() == TEXT){
-		ret += "'" + i_col->second.str() + "'";
-	    }
-	    else{
-		ret += i_col->second.str();
-	    }
-        }
+	    ret += i_col->second.str();
+	}
 	ret += "); ";
 	return ret;
     }
@@ -973,13 +971,7 @@ namespace sf{
 		else{
 		    is_first = false;
 		}
-		ret += i_col->first + " = ";
-		if(i_col->second.type() == TEXT){
-		    ret += "'" + i_col->second.str() + "'";
-		}
-		else{
-		    ret += i_col->second.str();
-		}
+		ret += i_col->first + " = " + i_col->second.str();
 	    }
 	}
 
