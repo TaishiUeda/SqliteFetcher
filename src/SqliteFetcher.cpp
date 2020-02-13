@@ -812,11 +812,9 @@ namespace sf{
 		    else{
 			new_query += i_row->first;
 		    }
+
 		    if(std::next(i_word) != i_from){
 			new_query += ", ";
-		    }
-		    else{
-			new_query += " ";
 		    }
 		}
 		else{
@@ -833,15 +831,10 @@ namespace sf{
 	    //add rest of queries
 	    auto i_words_end = words.end();
 	    for(auto i_word = i_from; i_word != i_words_end; ++i_word){
-		new_query += *i_word;
-		if(std::next(i_word) != i_words_end){
-		    new_query += " ";
-		}
-		else{
-		    new_query += ";";
-		}
+		new_query += " " + *i_word;
 	    }
 	}
+	new_query += ";";
 
 	ExecResult_t res = exec(new_query, err_msg);
 	if(!err_msg.empty()){
