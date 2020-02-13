@@ -152,14 +152,7 @@ int main(int argc, char* argv[]) {
     //  Fetch colmun
     //
     std::cout << "--- 7. Fetch columns ---" << std::endl;
-    
-    //Fetcher can execute multiple queries connected by semicolon.
-    std::list<ExecResult_t> res_list
-	= sql_fetch.execSeparate("SELECT * FROM user; SELECT city, population FROM area;", err_msg);
-    std::cout << sql_fetch.dump(res_list);
-    
-    auto i_res = res_list.begin();
-    ColumnList_t selected_1 = sql_fetch.fetchColumn(*i_res, err_msg);
+    ColumnList_t selected_1 = sql_fetch.fetchColumn("SELECT * FROM user", err_msg);
     //get some of values by "get" function
     std::string user_name_1;
     selected_1[0]["name"].get(user_name_1);
@@ -167,9 +160,7 @@ int main(int argc, char* argv[]) {
     selected_1[0]["height_cm"].get(user1_height_cm);
     std::cout << "From user, name: " << user_name_1 
 	<< ", height_cm: " << user1_height_cm << std::endl;
-
-    ++i_res;
-    ColumnList_t selected_2 = sql_fetch.fetchColumn(*i_res, err_msg);
+    ColumnList_t selected_2 = sql_fetch.fetchColumn("SELECT city, population FROM area", err_msg);
     //get some of values by "get" function
     double pop;
     std::string city;
@@ -222,9 +213,7 @@ int main(int argc, char* argv[]) {
     res = sql_fetch.exec(str, err_msg);
     std::cout << sql_fetch.dump(res);
     std::cout << "--- 10. update a column ---" << std::endl;
-    res = sql_fetch.exec("SELECT ID, size FROM user WHERE height_cm >= 180.0;", err_msg);
-    std::cout << sql_fetch.dump(res);
-    ColumnList_t large_user = sql_fetch.fetchColumn(res, err_msg);
+    ColumnList_t large_user = sql_fetch.fetchColumn("SELECT ID, size FROM user WHERE height_cm >= 180.0;", err_msg);
 
     auto i_large_end = large_user.end();
     for(auto i_large = large_user.begin(); i_large != i_large_end; ++i_large){
@@ -235,9 +224,7 @@ int main(int argc, char* argv[]) {
 	std::cout << sql_fetch.dump(res);
     }
 
-    res = sql_fetch.exec("SELECT * from user;", err_msg);
-    std::cout << sql_fetch.dump(res);
-    ColumnList_t all_user = sql_fetch.fetchColumn(res, err_msg);
+    ColumnList_t all_user = sql_fetch.fetchColumn("SELECT * from user;", err_msg);
     
     return 0;
 }

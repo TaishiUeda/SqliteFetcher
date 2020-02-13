@@ -8,6 +8,8 @@
  */
 
 #include "SqliteFetcher.hpp"
+#include <sstream>
+#include <algorithm>
 
 namespace sf{
 
@@ -44,14 +46,21 @@ namespace sf{
 	    type_ = INT64;
 	    return;
 	}
+        
+	//separate by white space
+	std::istringstream iss(type);
+	std::vector<std::string> words;
+	std::string a_word;
+	iss >> a_word;
+
 	//delete cascade from type
-	size_t cpos = type.find('(');
+	size_t cpos = a_word.find('(');
 	if(cpos != std::string::npos){
-	    type = type.substr(0u,cpos);
+	    a_word = a_word.substr(0u,cpos);
 	}
 
-	if(TypeDef.find(type) != TypeDef.end()){
-	    type_ = TypeDef.at(type);
+	if(TypeDef.find(a_word) != TypeDef.end()){
+	    type_ = TypeDef.at(a_word);
 	}
 	else{
 	    type_ = BLOB;
@@ -562,9 +571,13 @@ namespace sf{
 		      }
 	    case BLOB:{
 			  Binary_t value_blob;
-			  for(size_t k=0u; k<dflt_str.length(); ++k){
-			      value_blob.push_back(
-				      static_cast<int8_t>(dflt_str[k]));
+			  for(size_t k=2u; 2u*k+1u < dflt_str.length()-1u; ++k){
+			      int8_t elm;
+			      std::string elm_str;
+			      elm_str.push_back(dflt_str[2u*k]);
+			      elm_str.push_back(dflt_str[2u*k+1u]);
+			      elm = static_cast<int8_t>(std::stoi(elm_str, nullptr, 16));
+			      value_blob.push_back(elm);
 			  }
 			  this->set(value_blob);
 			  break;
@@ -587,6 +600,7 @@ namespace sf{
        }
        else{
 	   is_opened_ = true;
+	   last_table_info_ = getTableInfo(last_err_);
        }
     } 
 
@@ -601,6 +615,7 @@ namespace sf{
        }
        else{
 	   this->is_opened_ = true;
+	   last_table_info_ = getTableInfo(last_err_);
        }
        return retval;
     }
@@ -714,47 +729,130 @@ namespace sf{
 
     //-------------------------------------------------------------------
     // Fetch column list from result of executed query for SELECT.
-    ColumnList_t Fetcher::fetchColumn(const ExecResult_t& res, std::string& err_msg){
+    ColumnList_t Fetcher::fetchColumn(const std::string& query, std::string& err_msg){
 	ColumnList_t col;
 	err_msg.clear();
-	//get table info of selected table.
-	size_t pos = res.in_sql.find("FROM");
-	if(pos == std::string::npos){
-	    pos = res.in_sql.find("from");
-	    if(pos == std::string::npos){
-		err_msg = "This result doesn't seem output of SELECT queries.";
-		return col;
+	
+	//separate query by white space
+	std::istringstream iss(query);
+	std::vector<std::string> words;
+	std::string a_word;
+	while (iss >> a_word) {
+	    //delete comma
+	    size_t comma_pos = a_word.find(",");
+	    if(comma_pos != std::string::npos){
+		a_word.erase(comma_pos,1);
+	    }
+	    size_t colon_pos = a_word.find(";");
+	    if(colon_pos != std::string::npos){
+		a_word.erase(colon_pos,1);
+	    }
+	    words.push_back(a_word);
+	}
+
+	//get table name from query
+	auto i_select = std::find_if(words.begin(),words.end(),
+		[](const std::string w){ return ( w == "select" || w == "SELECT");});
+	if(i_select == words.end()){
+	    err_msg = "Query doen't include 'FROM' statement";
+	    return col;
+	}
+	//get table name from query
+	auto i_from = std::find_if(words.begin(),words.end(),
+		[](const std::string w){ return ( w == "from" || w == "FROM");});
+	if(i_from == words.end()){
+	    err_msg = "Query doen't include 'FROM' statement";
+	    return col;
+	}
+
+	auto i_table_info = last_table_info_.find(*std::next(i_from));
+	if(i_table_info == last_table_info_.end()){
+	    err_msg = "No such a table: " + *std::next(i_from);
+	    return col;
+	}
+
+	const Column_t& table_col = i_table_info->second;
+
+	//if all rows are selected
+	auto i_all = std::find_if(i_select, i_from,
+		[](const std::string w){ return  w == "*";});
+
+	//create new query to quate BLOB data
+	std::string new_query = "";
+	for(auto i_word=words.begin(); i_word != std::next(i_select); ++i_word){
+	    new_query += *i_word + " ";
+	}
+
+	bool is_changed = false;
+	if(i_all != i_from){
+	    auto i_col_end = table_col.end();
+	    for(auto i_col = table_col.begin(); i_col != i_col_end; ++i_col){
+		if(i_col->second.type() == BLOB){
+		    new_query += "quote(" + i_col->first + ")";
+		    is_changed = true;
+		}
+		else{
+		    new_query += i_col->first;
+		}
+
+		if(std::next(i_col) != i_col_end){
+		    new_query += ", ";
+		}
+	    }
+	}
+	//If specific rows are selected
+	else{
+	    for(auto i_word=std::next(i_select); i_word != i_from; ++i_word){
+		auto i_row = table_col.find(*i_word);
+		if(i_row != table_col.end()){
+		    if(i_row->second.type() == BLOB){
+			new_query += "quote(" + i_row->first + ")";
+			is_changed = true;
+		    }
+		    else{
+			new_query += i_row->first;
+		    }
+		    if(std::next(i_word) != i_from){
+			new_query += ", ";
+		    }
+		}
+		else{
+		    err_msg = "Coudn't find " + i_row->first + " in table " +  *std::next(i_from);
+		    return col;
+		}
 	    }
 	}
 
-	pos = res.in_sql.find(' ',pos);
-	++pos;
-	while(res.in_sql[pos] == ' '){
-	    ++pos;
-	    if(pos >= res.in_sql.size()){
-		err_msg = "Can't find table name";
-		return col;
+	if(!is_changed){
+	    new_query = query;
+	}
+	else{
+	    //add rest of queries
+	    auto i_words_end = words.end();
+	    for(auto i_word = i_from; i_word != i_words_end; ++i_word){
+		new_query += *i_word;
+		if(std::next(i_word) != i_words_end){
+		    new_query += " ";
+		}
 	    }
 	}
-	size_t begin_pos = pos;
-	while(res.in_sql[pos] != ' ' && res.in_sql[pos] != ';'){
-	    ++pos;
-	    if(pos >= res.in_sql.size()){
-		break;
-	    }
+
+	ExecResult_t res = exec(new_query, err_msg);
+	if(!err_msg.empty()){
+	    return col;
 	}
-	size_t end_pos = pos;
-	std::string table_name = res.in_sql.substr(begin_pos, end_pos-begin_pos);
-
-	Column_t table_info = getTableInfo(table_name, err_msg);
-
+	
 	auto i_res_end = res.result.end();
 	for(auto i_res = res.result.begin(); i_res != i_res_end; ++i_res){
 	    auto i_elm_end = i_res->end();
 	    Column_t a_col;
 	    for(auto i_elm = i_res->begin(); i_elm != i_elm_end; ++i_elm){
-		const Data& a_data = table_info.at(i_elm->first);
-		a_col[i_elm->first] = Data(i_elm->second, a_data.typeStr(), a_data.flags());
+		auto i_data = table_col.find(i_elm->first);
+		if(i_data == table_col.end()){
+		    err_msg = "Coudn't find " + i_elm->first + " in table " +  *std::next(i_from);
+		}
+		a_col[i_elm->first] = Data(i_elm->second, 
+			i_data->second.typeStr(), i_data->second.flags());
 	    }
 	    col.push_back(a_col);
 	}
@@ -830,6 +928,10 @@ namespace sf{
 	std::string ret;
 	auto i_table_end = table_info.end();
 	for(auto i_table=table_info.begin(); i_table != i_table_end; ++i_table){
+	    //If this is a new table, update last_table_info_
+	    if(last_table_info_.find(i_table->first) == i_table_end){
+		last_table_info_[i_table->first] = i_table->second;
+	    }
 	    ret += "CREATE TABLE " + i_table->first + "(";
 	    auto i_col_end = i_table->second.end();
 	    bool is_first = true;

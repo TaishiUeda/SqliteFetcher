@@ -425,11 +425,11 @@ namespace sf{
 
 	    //! Fetch column list from result of executed query for SELECT.
 	    /*!
-	     * \param[in] res Result output by exec function with SELECT queries.
+	     * \param[in] query SQL query to select values.
 	     * \param[out] err_msg Error message. In case of fething successfully, this becomes empty.
 	     * \retval list of columns selected by queries.
 	     */
-	    ColumnList_t fetchColumn(const ExecResult_t& res, std::string& err_msg);
+	    ColumnList_t fetchColumn(const std::string& query, std::string& err_msg);
 
 	    //! Get table information
 	    /*!
