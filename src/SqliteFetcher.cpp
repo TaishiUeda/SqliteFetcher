@@ -491,10 +491,12 @@ namespace sf{
 	    case BLOB:{
 			  Binary_t value_blob;
 			  this->get(value_blob);
-			  char buff[value_blob.size()+1];
+			  char buff[2*value_blob.size()+1];
 			  char* ptr = buff;
 			  for(size_t k=0u; k<value_blob.size(); ++k){
-			      sprintf(ptr,"%x",value_blob[k]);
+			      sprintf(ptr,"%2x",value_blob[k]);
+			      //Hexadecimal occupies 2 charactors
+			      ++ptr;
 			      ++ptr;
 			  }
 			  *ptr = '\0';
