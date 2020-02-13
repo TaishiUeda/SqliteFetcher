@@ -42,24 +42,33 @@ std::string query = sql_fetch.genQueryCreate(table_info_A, err_msg);
 ExecResult_t res = sql_fetch.exec(query, err_msg);
 ```
 
-And, below is a code to get certain columns and save it into a container;
+And, the folowing is a code to get certain columns and save it into a container;
 
 ```cpp
-//Execute a query to "SELECT"
-ExecResult_t res = sql_fetch.exec("SELECT city, population FROM area;", err_msg);
+//Execute a query to "SELECT" and save the result into container
+ColumnList_t selected = sql_fetch.fetchColumn("SELECT city, population FROM area", err_msg);
 
-//save the result into container
-ColumnList_t selected_2 = sql_fetch.fetchColumn(res, err_msg);
-
-//The values in selected column can be gotten with STL function, and
-//the type of value is automatically determined.
 double pop;
 std::string city;
-for(auto i_sel2 = selected_2.begin(); i_sel2 != i_sel2_end; ++i_sel2){
-    i_sel2->at("population").get(pop); 
-    i_sel2->at("city").get(city);
+std::string country;
+auto i_sel2_end = selected.end();
+
+std::cout << "From area, " << std::endl;
+for(auto i_sel2 = selected.begin(); i_sel2 != i_sel2_end; ++i_sel2){
+    //get some of values by "get" function
+    try{
+        i_sel2->at("population").get(pop); 
+        i_sel2->at("city").get(city);
+        //If key words are not in selected columns,
+        //it through exeption from std::map
+        //i_sel2->at("contry").get(country);
+    }
+    catch(std::exception& e){
+        std::cerr << "Error in get values. what: " << e.what() << std::endl;
+    }
     std::cout << city << ": population = " << pop << std::endl;
 }
+
 ```
 
 See [test code](test/main.cpp) if you would like to know more examples.
@@ -197,21 +206,13 @@ Several functions to generate query as std::string from STL based containers.
 
 ## Function to execute query of SQL.
 
-The main class "Fetcher" has only two function to execute query of SQL.
+The main class "Fetcher" has three function to execute query of SQL.
 
 1. sf::Fetcher::exec()
     To execute queries and returns result in single struct ExecResult_t.
 2. sf::Fetcher::execSeparate()
     To execute multiple queries and returns result in list of struct std::list<ExecResult_t>.
-
-
----
-
-## Function to fetch selected columns into STL based containers
-
-One functions to save result of "SELECT" query into ColumnList_t container.
-
-1. sf::Fetcher::fetchColumn()
+3. sf::Fetcher::fetchColumn()
     To fetch and save output from "SELECT" query into container.
 
 
@@ -237,4 +238,5 @@ doxygen
 
 ---
 
-This software is released under the MIT License, see LICENSE.txt.
+*This software is released under the MIT License, see LICENSE.txt.*
+
