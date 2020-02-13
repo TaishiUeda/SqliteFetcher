@@ -815,6 +815,9 @@ namespace sf{
 		    if(std::next(i_word) != i_from){
 			new_query += ", ";
 		    }
+		    else{
+			new_query += " ";
+		    }
 		}
 		else{
 		    err_msg = "Coudn't find " + i_row->first + " in table " +  *std::next(i_from);
@@ -833,6 +836,9 @@ namespace sf{
 		new_query += *i_word;
 		if(std::next(i_word) != i_words_end){
 		    new_query += " ";
+		}
+		else{
+		    new_query += ";";
 		}
 	    }
 	}
