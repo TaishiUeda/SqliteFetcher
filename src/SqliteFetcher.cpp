@@ -754,8 +754,7 @@ namespace sf{
 	    Column_t a_col;
 	    for(auto i_elm = i_res->begin(); i_elm != i_elm_end; ++i_elm){
 		const Data& a_data = table_info.at(i_elm->first);
-		a_col[i_elm->first] = Data(a_data);
-		a_col[i_elm->first].set(a_data.type(), i_elm->second);
+		a_col[i_elm->first] = Data(i_elm->second, a_data.typeStr(), a_data.flags());
 	    }
 	    col.push_back(a_col);
 	}
