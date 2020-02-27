@@ -646,7 +646,11 @@ namespace sf{
 	    err_msg = err_char;
 	    sqlite3_free(err_char);
 	}
-	last_table_info_ = getTableInfo(last_err_);
+
+	if(to_info_update_){
+	    to_info_update_ = false;
+	    last_table_info_ = getTableInfo(last_err_);
+	}
 	return last_exec_result_;
     }
 
@@ -952,6 +956,7 @@ namespace sf{
 	    }
 	    ret += "); ";
 	}
+	to_info_update_ = true;
 	return ret;
     }
 

@@ -525,6 +525,7 @@ namespace sf{
 	    std::string last_err_;
 
 	    bool is_opened_{false};
+	    bool to_info_update_{false};
 	    sqlite3* db_ptr_{nullptr};
 
 
