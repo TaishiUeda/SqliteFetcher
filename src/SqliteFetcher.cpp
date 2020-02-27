@@ -646,6 +646,7 @@ namespace sf{
 	    err_msg = err_char;
 	    sqlite3_free(err_char);
 	}
+	last_table_info_ = getTableInfo(last_err_);
 	return last_exec_result_;
     }
 
