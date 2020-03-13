@@ -606,9 +606,16 @@ namespace sf{
     // Open database.
     int32_t Fetcher::open(const std::string& db_name, std::string& err_msg,
 	    const int32_t& flags, const char* zVfs){
-       int32_t retval 
-	   = sqlite3_open_v2(db_name.c_str(), &db_ptr_, flags, zVfs);
-       if(retval != SQLITE_OK){
+	err_msg = "";
+	int32_t retval = 0;
+	if(&db_ptr_!=nullptr){
+	    retval = this->close(err_msg);
+	    if(!err_msg.empty()){
+		return retval;
+	    }
+	}
+	retval = sqlite3_open_v2(db_name.c_str(), &db_ptr_, flags, zVfs);
+	if(retval != SQLITE_OK){
 	   this->last_err_ = sqlite3_errstr(retval);
        }
        else{
@@ -627,6 +634,7 @@ namespace sf{
 	    this->last_err_ = sqlite3_errstr(retval);
 	    err_msg = this->last_err_;
 	}
+	db_ptr_ = nullptr;
 	return retval;
     }
 
