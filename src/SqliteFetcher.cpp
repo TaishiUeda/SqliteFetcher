@@ -619,6 +619,18 @@ namespace sf{
     }
 
     //-------------------------------------------------------------------
+    int32_t Fetcher::close(std::string err_msg){
+	err_msg = "";
+	int32_t retval 
+	    = sqlite3_close(&db_ptr_);
+	if(retval != SQLITE_OK){
+	    this->last_err_ = sqlite3_errstr(retval);
+	    err_msg = this->last_err_;
+	}
+	return retval;
+    }
+
+    //-------------------------------------------------------------------
     static int execCallback(void *result_ptr, int argc, char **argv, char **col_name){
 	ResultElement_t a_res;
         for(int k=0; k<argc; ++k){

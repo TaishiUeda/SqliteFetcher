@@ -392,6 +392,13 @@ namespace sf{
 		    const int32_t& flags= (SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE), 
 		    const char* zVfs=nullptr);
 
+	    //! Close database
+	    /*!
+	     * In case of creating a new database, please close database with this function
+	     * in advance of open a new database.
+	     */
+	    int32_t close(std::string err_msg);
+
 	    //! Execute SQLite query
 	    /*!
 	     * \param[in] query SQLite query to be executed
